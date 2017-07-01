@@ -8,13 +8,11 @@ pub fn verse(number: u32) -> String {
 }
 
 pub fn sing(finish: u32, start: u32) -> String {
-    let mut result : String = String::new();
+    let mut result: Vec<String> = Vec::new();
 
     for i in (start..finish + 1).rev() {
-        result.push_str(&verse(i));
-        result.push('\n');
+        result.push(verse(i));
     }
 
-    result.pop();
-    result
+    result.join("\n")
 }
