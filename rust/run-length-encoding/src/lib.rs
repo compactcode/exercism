@@ -4,17 +4,12 @@ pub fn encode(content: &str) -> String {
     let mut curr_count = 0;
     while let Some(curr) = chars.next() {
         curr_count += 1;
-        match chars.peek() {
-            Some(next) if next == &curr => {
-                // Do nothing.
+        if chars.peek() != Some(&curr) {
+            match curr_count {
+                1 => result.push(curr),
+                _ => result.push_str(&format!("{}{}", curr_count, curr))
             }
-            _ => {
-                match curr_count {
-                    1 => result.push(curr),
-                    _ => result.push_str(&format!("{}{}", curr_count, curr))
-                }
-                curr_count = 0;
-            }
+            curr_count = 0;
         }
     }
     result
@@ -22,9 +17,8 @@ pub fn encode(content: &str) -> String {
 
 pub fn decode(content: &str) -> String {
     let mut result = String::new();
-    let mut chars = content.chars();
     let mut numeric_chars = String::new();
-    while let Some(curr) = chars.next() {
+    for curr in content.chars()  {
         if curr.is_numeric() {
             numeric_chars.push(curr)
         } else {
