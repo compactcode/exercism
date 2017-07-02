@@ -5,10 +5,10 @@ pub fn encode(content: &str) -> String {
     while let Some(curr) = chars.next() {
         curr_count += 1;
         if chars.peek() != Some(&curr) {
-            match curr_count {
-                1 => result.push(curr),
-                _ => result.push_str(&format!("{}{}", curr_count, curr))
+            if curr_count > 1 {
+                result.push_str(&curr_count.to_string())
             }
+            result.push(curr);
             curr_count = 0;
         }
     }
