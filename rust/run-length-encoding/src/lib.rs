@@ -22,10 +22,9 @@ pub fn decode(content: &str) -> String {
         if curr.is_numeric() {
             numeric_chars.push(curr)
         } else {
-            match numeric_chars.parse::<usize>() {
-                Ok(total) => result.push_str(&curr.to_string().repeat(total)),
-                Err(_)    => result.push(curr)
-            }
+            result.push_str(&curr.to_string().repeat(
+                numeric_chars.parse::<usize>().unwrap_or(1)
+            ));
             numeric_chars.clear()
         }
     }
