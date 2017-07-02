@@ -2,7 +2,7 @@ pub fn square(n: u32) -> u64 {
     if n < 1 || n > 64 {
         panic!("Square must be between 1 and 64")
     }
-    (1..n).fold(1, |acc, _| acc * 2)
+    2u64.pow(n - 1)
 }
 
 pub fn total() -> u64 {
