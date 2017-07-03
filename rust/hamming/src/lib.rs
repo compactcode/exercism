@@ -3,13 +3,5 @@ pub fn hamming_distance(a: &str, b: &str) -> Result<usize, &'static str> {
         return Err("length of arguments does not match");
     }
 
-    let mut distance = 0;
-
-    for (a, b) in a.chars().zip(b.chars()) {
-        if a != b {
-            distance += 1
-        }
-    }
-
-    Ok(distance)
+    Ok(a.chars().zip(b.chars()).filter(|&(a, b)| a != b).count())
 }
