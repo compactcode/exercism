@@ -8,16 +8,15 @@ impl PascalsTriangle {
     }
 
     pub fn rows(&self) -> Vec<Vec<u32>> {
-        let mut result = Vec::new();
-        for row in 0..self.row_count {
-            let mut row_data = vec![1];
-            let mut last = 1;
-            for column in 0..row {
-                last =  last * (row - column) / (column + 1);
-                row_data.push(last)
+        (0..self.row_count).map(|n| PascalsTriangle::row(n)).collect()
+    }
+
+    fn row(n: u32) -> Vec<u32> {
+        (0..n).fold(vec![1], |mut data, column| {
+            if let Some(&last) = data.last() {
+                data.push(last * (n - column) / (column + 1));
             }
-            result.push(row_data)
-        }
-        result
+            data
+        })
     }
 }
