@@ -1,8 +1,11 @@
 pub fn reply(input: &str) -> &str {
-    match input {
+    fn is_only_uppercase(x: &str) -> bool {
+        x.chars().any(char::is_alphabetic) && !x.chars().any(char::is_lowercase)
+    }
+    match input.trim() {
         x if x.is_empty() => "Fine. Be that way!",
+        x if is_only_uppercase(x) => "Whoa, chill out!",
         x if x.ends_with("?") => "Sure.",
-        x if x.find(char::is_lowercase) == None => "Whoa, chill out!",
         _ => "Whatever.",
     }
 }
