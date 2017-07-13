@@ -1,4 +1,5 @@
 use std::collections::HashMap;
+use std::iter::once;
 
 const NUCLEOTIDES: &str = "ACGT";
 
@@ -6,9 +7,9 @@ fn is_nucleotide(c: char) -> bool {
     NUCLEOTIDES.contains(c)
 }
 
-pub fn count(nucleotide: char, dna: &str) -> Result<usize, ()> {
-    if is_nucleotide(nucleotide) && dna.chars().all(is_nucleotide) {
-        Ok(dna.matches(nucleotide).count())
+pub fn count(c: char, dna: &str) -> Result<usize, ()> {
+    if dna.chars().chain(once(c)).all(is_nucleotide) {
+        Ok(dna.matches(c).count())
     } else {
         Err(())
     }
@@ -17,8 +18,8 @@ pub fn count(nucleotide: char, dna: &str) -> Result<usize, ()> {
 pub fn nucleotide_counts(dna: &str) -> Result<HashMap<char, usize>, ()> {
     let mut result = HashMap::new();
 
-    for nucleotide in NUCLEOTIDES.chars() {
-        result.insert(nucleotide, try!(count(nucleotide, dna)));
+    for n in NUCLEOTIDES.chars() {
+        result.insert(n, count(n, dna)?);
     }
 
     Ok(result)
