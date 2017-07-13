@@ -15,16 +15,16 @@ pub fn count(nucleotide: char, dna: &str) -> Result<usize, ()> {
 }
 
 pub fn nucleotide_counts(dna: &str) -> Result<HashMap<char, usize>, ()> {
-    let counts = "ACGT".chars().map(|nucleotide| (nucleotide, count(nucleotide, dna)));
-    let mut result = HashMap::new();
-    for (c, r) in counts {
-        if r.is_ok() {
-            result.insert(c, r.unwrap());
+    if dna.chars().all(is_nucleotide) {
+        let mut result = HashMap::new();
+
+        for nucleotide in NUCLEOTIDES.chars() {
+            result.insert(nucleotide, count(nucleotide, dna).unwrap());
         }
-    }
-    if result.is_empty() {
-        Err(())
-    } else {
+
         Ok(result)
+    } else {
+        Err(())
     }
+
 }
