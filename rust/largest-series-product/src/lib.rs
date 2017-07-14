@@ -7,18 +7,12 @@ pub fn lsp(input: &str, span: usize) -> Result<u32, ()> {
         return Err(())
     }
 
-    let mut best    = 0;
-    let mut window = Vec::new();
-
-    for n in input.chars().flat_map(|c| c.to_digit(10)) {
-        window.push(n);
-        if window.len() == span {
-            if window.iter().product::<u32>() > best {
-                best = window.iter().product();
-            }
-            window.remove(0);
-        }
-    }
-
-    Ok(best)
+    input
+        .chars()
+        .flat_map(|c| c.to_digit(10))
+        .collect::<Vec<u32>>()
+        .windows(span)
+        .map(|window| window.iter().product())
+        .max()
+        .ok_or(())
 }
