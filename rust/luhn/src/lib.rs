@@ -7,18 +7,14 @@ fn double(n: u32) -> u32 {
 }
 
 pub fn is_valid(input: &str) -> bool {
-    let chars: Vec<char> = input.chars().filter(|&c| !char::is_whitespace(c)).collect();
+    let trimmed = input.replace(" ", "");
 
-    if chars.len() < 2 {
+    if trimmed.len() < 2 || !trimmed.chars().all(char::is_numeric) {
         return false
     }
 
-    if chars.iter().cloned().filter(|&c| !char::is_numeric(c)).count() > 0 {
-        return false
-    }
-
-    chars
-        .iter()
+    trimmed
+        .chars()
         .rev()
         .filter_map(|c| c.to_digit(10))
         .enumerate()
