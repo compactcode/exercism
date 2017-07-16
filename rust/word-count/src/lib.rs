@@ -5,14 +5,12 @@ fn invalid_char(c: char) -> bool {
 }
 
 pub fn word_count(sentence: &str) -> HashMap<String, u32> {
-    let mut words = HashMap::new();
-    for word in sentence
+    sentence
         .to_lowercase()
         .replace(invalid_char, "")
-        .split(char::is_whitespace) {
-        if !word.is_empty() {
+        .split_whitespace()
+        .fold(HashMap::new(), |mut words, word| {
             *words.entry(word.to_string()).or_insert(0) += 1;
-        }
-    }
-    words
+            words
+        })
 }
