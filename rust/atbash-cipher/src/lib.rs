@@ -2,8 +2,15 @@
 use std::ascii::AsciiExt;
 
 pub fn encode(input: &str) -> String {
+    substitue(input)
+}
+
+pub fn decode(input: &str) -> String {
+    substitue(input).replace(" ", "")
+}
+
+fn substitue(input: &str) -> String {
     let alphabet: Vec<char> = "abcdefghijklmnopqrstuvwxyz".chars().collect();
-    let mut spacer_count = 0;
     input
         .chars()
         .into_iter()
@@ -16,18 +23,12 @@ pub fn encode(input: &str) -> String {
             }
         })
         .fold(String::new(), |mut encoded, c| {
-            encoded.push(c);
-            spacer_count += 1;
-            if spacer_count == 5 {
+            if encoded.len() % 6 == 0 {
                 encoded.push(' ');
-                spacer_count = 0;
             }
+            encoded.push(c);
             encoded
         })
         .trim()
         .to_string()
-}
-
-pub fn decode(input: &str) -> String {
-    encode(input).replace(" ", "")
 }
