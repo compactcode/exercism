@@ -10,18 +10,12 @@ pub fn decode(input: &str) -> String {
 }
 
 fn substitue(input: &str) -> String {
-    let alphabet: Vec<char> = "abcdefghijklmnopqrstuvwxyz".chars().collect();
     input
         .chars()
         .into_iter()
         .filter(char::is_ascii_alphanumeric)
         .flat_map(char::to_lowercase)
-        .map(|c| {
-            match alphabet.iter().position(|&a| a == c) {
-                Some(index) => alphabet[25 - index],
-                _ => c
-            }
-        })
+        .map(translate)
         .fold(String::new(), |mut encoded, c| {
             if encoded.len() % 6 == 0 {
                 encoded.push(' ');
@@ -31,4 +25,15 @@ fn substitue(input: &str) -> String {
         })
         .trim()
         .to_string()
+}
+
+const UPPER: u8 = 'z' as u8;
+const LOWER: u8 = 'a' as u8;
+
+fn translate(c: char) -> char {
+    if c.is_digit(10) {
+        c
+    } else {
+        (UPPER + LOWER - c as u8) as char
+    }
 }
