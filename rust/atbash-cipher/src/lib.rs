@@ -5,9 +5,10 @@ pub fn encode(input: &str) -> String {
     let alphabet: Vec<char> = "abcdefghijklmnopqrstuvwxyz".chars().collect();
     let mut spacer_count = 0;
     input
-        .to_lowercase()
         .chars()
-        .filter(|c| c.is_ascii_alphanumeric())
+        .into_iter()
+        .filter(char::is_ascii_alphanumeric)
+        .flat_map(char::to_lowercase)
         .map(|c| {
             match alphabet.iter().position(|&a| a == c) {
                 Some(index) => alphabet[25 - index],
