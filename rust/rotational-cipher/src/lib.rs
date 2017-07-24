@@ -1,18 +1,18 @@
+use std::ascii::AsciiExt;
+
 static ALPHABET: &'static str = "abcdefghijklmnopqrstuvwxyz";
 
 fn rotate_char(c: char, key: usize) -> char {
-    let lower: Vec<char> = ALPHABET.chars().collect();
-    let upper: Vec<char> = lower.iter().flat_map(|c| c.to_uppercase()).collect();
-    if c.is_lowercase() {
-        match lower.iter().position(|&a| a == c) {
-            Some(index) => lower[(key + index) % 26],
-            _ => c
-        }
-    } else {
-        match upper.iter().position(|&a| a == c) {
-            Some(index) => upper[(key + index) % 26],
-            _ => c
-        }
+    let indexed_chars: Vec<char> = ALPHABET.chars().collect();
+
+    let rotated_char = match ALPHABET.find(|a| a == c.to_ascii_lowercase()) {
+        Some(index) => indexed_chars[(key + index) % 26],
+        _ => c
+    };
+
+    match c.is_lowercase() {
+        true  => rotated_char,
+        false => rotated_char.to_ascii_uppercase()
     }
 }
 
