@@ -1,33 +1,25 @@
+// https://stackoverflow.com/questions/1801391/what-is-the-best-algorithm-for-checking-if-a-number-is-prime#1801446
 fn is_prime(n: u64) -> bool {
-    if n == 2 {
-        return true;
-    }
+    return match n {
+        2 => true,
+        3 => true,
+        x if x % 2 == 0 => false,
+        x if x % 3 == 0 => false,
+        _ => {
+            let mut i = 5;
+            let mut w = 2;
 
-    if n == 3 {
-        return true;
-    }
+            while i * i <= n {
+                if n % i == 0 {
+                    return false;
+                }
 
-    if n % 2 == 0 {
-        return false;
-    }
-
-    if n % 3 == 0 {
-        return false;
-    }
-
-    let mut i = 5;
-    let mut w = 2;
-
-    while i * i <= n {
-        if n % i == 0 {
-            return false;
+                i += w;
+                w = 6 - w;
+            }
+            return true;
         }
-
-        i += w;
-        w = 6 - w;
-    }
-
-    return true;
+    };
 }
 
 struct PrimeIter { state: u64 }
