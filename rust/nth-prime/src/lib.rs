@@ -17,6 +17,7 @@ fn is_prime(n: u64) -> bool {
                 i += w;
                 w = 6 - w;
             }
+
             return true;
         }
     };
@@ -39,8 +40,9 @@ impl Iterator for PrimeIter {
 }
 
 pub fn nth(n: usize) -> Result<u64, ()> {
-    match n {
-        0 => Err(()),
-        _ => Ok(PrimeIter { state: 0 }.nth(n).unwrap())
+    if n < 1 {
+        return Err(());
     }
+
+    Ok(PrimeIter { state: 0 }.nth(n).unwrap())
 }
