@@ -43,23 +43,38 @@ impl<T> SimpleLinkedList<T> {
 
 impl<T: Clone> SimpleLinkedList<T> {
     pub fn rev(&self) -> SimpleLinkedList<T> {
-        unimplemented!()
+        let mut result = SimpleLinkedList::new();
+
+        let mut option = &self.head;
+
+        while let Some(ref node) = *option {
+            result.push(node.data.clone());
+            option = &node.next;
+        }
+
+        result
     }
 }
 
-
 impl<'a, T: Clone> From<&'a [T]> for SimpleLinkedList<T> {
     fn from(slice: &[T]) -> Self {
-        let mut results = SimpleLinkedList::new();
+        let mut result = SimpleLinkedList::new();
         for data in slice {
-            results.push(data.clone());
+            result.push(data.clone());
         }
-        results
+        result
     }
 }
 
 impl<T> Into<Vec<T>> for SimpleLinkedList<T> {
-    fn into(self) -> Vec<T> {
-        unimplemented!()
+    fn into(mut self) -> Vec<T> {
+        let mut result = vec![];
+
+        while let Some(node) = self.pop() {
+            result.push(node);
+        }
+
+        result.reverse();
+        result
     }
 }
