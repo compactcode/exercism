@@ -5,10 +5,7 @@ struct Node<T> {
 
 impl<T> Node<T> {
     pub fn len(&self) -> usize {
-        match self.next {
-            None           => 1,
-            Some(ref node) => 1 + node.len()
-        }
+        self.next.as_ref().map_or(1, |node| 1 + node.len())
     }
 }
 
@@ -22,10 +19,7 @@ impl<T> SimpleLinkedList<T> {
     }
 
     pub fn len(&self) -> usize {
-        match self.head {
-            None           => 0,
-            Some(ref node) => node.len()
-        }
+        self.head.as_ref().map_or(0, |node| node.len())
     }
 
     pub fn push(&mut self, data: T) {
