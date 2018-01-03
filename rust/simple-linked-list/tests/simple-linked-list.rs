@@ -39,7 +39,6 @@ fn test_pop_returns_last_added_element() {
 }
 
 #[test]
-#[ignore]
 fn test_peek_returns_head_element() {
     let mut list: SimpleLinkedList<u32> = SimpleLinkedList::new();
     assert_eq!(list.peek(), None, "No element should be contained in list");
