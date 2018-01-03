@@ -48,7 +48,6 @@ fn test_peek_returns_head_element() {
 }
 
 #[test]
-#[ignore]
 fn test_from_slice() {
     let array = ["1", "2", "3", "4"];
     let mut list = SimpleLinkedList::from(array.as_ref());

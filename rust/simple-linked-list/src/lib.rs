@@ -49,8 +49,12 @@ impl<T: Clone> SimpleLinkedList<T> {
 
 
 impl<'a, T: Clone> From<&'a [T]> for SimpleLinkedList<T> {
-    fn from(_: &[T]) -> Self {
-        unimplemented!()
+    fn from(slice: &[T]) -> Self {
+        let mut results = SimpleLinkedList::new();
+        for data in slice {
+            results.push(data.clone());
+        }
+        results
     }
 }
 
