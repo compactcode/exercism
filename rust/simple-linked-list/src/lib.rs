@@ -1,5 +1,3 @@
-use std::mem;
-
 struct Node<T> {
     data: T,
     next: Option<Box<Node<T>>>
@@ -33,18 +31,15 @@ impl<T> SimpleLinkedList<T> {
     pub fn push(&mut self, data: T) {
         self.head = Some(Box::new(Node {
             data: data,
-            next: mem::replace(&mut self.head, None)
+            next: self.head.take()
         }));
     }
 
     pub fn pop(&mut self) -> Option<T> {
-        match mem::replace(&mut self.head, None) {
-            None               => None,
-            Some(mut old_head) => {
-                self.head = mem::replace(&mut old_head.next, None);
-                return Some(old_head.data)
-            }
-        }
+        self.head.take().map(|mut old_head| {
+            self.head = old_head.next.take();
+            old_head.data
+        })
     }
 
     pub fn peek(&self) -> Option<&T> {
