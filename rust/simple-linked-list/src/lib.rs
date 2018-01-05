@@ -1,16 +1,14 @@
+pub struct SimpleLinkedList<T> {
+    head: Option<Box<Node<T>>>
+}
+
 struct Node<T> {
     data: T,
     next: Option<Box<Node<T>>>
 }
 
-impl<T> Node<T> {
-    pub fn len(&self) -> usize {
-        self.next.as_ref().map_or(1, |node| 1 + node.len())
-    }
-}
-
-pub struct SimpleLinkedList<T> {
-    head: Option<Box<Node<T>>>
+pub struct NodeIter<'a, T:'a> {
+    next: Option<&'a Node<T>>,
 }
 
 impl<T> SimpleLinkedList<T> {
@@ -19,7 +17,7 @@ impl<T> SimpleLinkedList<T> {
     }
 
     pub fn len(&self) -> usize {
-        self.head.as_ref().map_or(0, |node| node.len())
+        self.iter().count()
     }
 
     pub fn push(&mut self, data: T) {
@@ -39,17 +37,29 @@ impl<T> SimpleLinkedList<T> {
     pub fn peek(&self) -> Option<&T> {
         self.head.as_ref().map(|node| &node.data)
     }
+
+    pub fn iter(&self) -> NodeIter<T> {
+        NodeIter { next: self.head.as_ref().map(|node| &**node) }
+    }
+}
+
+impl<'a, T> Iterator for NodeIter<'a, T> {
+    type Item = &'a T;
+
+    fn next(&mut self) -> Option<Self::Item> {
+        self.next.map(|node| {
+            self.next = node.next.as_ref().map(|node| &**node);
+            &node.data
+        })
+    }
 }
 
 impl<T: Clone> SimpleLinkedList<T> {
     pub fn rev(&self) -> SimpleLinkedList<T> {
         let mut result = SimpleLinkedList::new();
 
-        let mut option = &self.head;
-
-        while let Some(ref node) = *option {
-            result.push(node.data.clone());
-            option = &node.next;
+        for data in self.iter() {
+            result.push(data.clone());
         }
 
         result
@@ -59,9 +69,11 @@ impl<T: Clone> SimpleLinkedList<T> {
 impl<'a, T: Clone> From<&'a [T]> for SimpleLinkedList<T> {
     fn from(slice: &[T]) -> Self {
         let mut result = SimpleLinkedList::new();
+
         for data in slice {
             result.push(data.clone());
         }
+
         result
     }
 }
