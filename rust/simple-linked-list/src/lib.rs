@@ -1,3 +1,5 @@
+use std::iter::FromIterator;
+
 pub struct SimpleLinkedList<T> {
     head: Option<Box<Node<T>>>
 }
@@ -70,27 +72,28 @@ impl<T> Iterator for IntoIter<T> {
     }
 }
 
-impl<T: Clone> SimpleLinkedList<T> {
-    pub fn rev(&self) -> SimpleLinkedList<T> {
-        let mut result = SimpleLinkedList::new();
+// A generic way to create a SimpleLinkedList from an iterator.
+impl<T> FromIterator<T> for SimpleLinkedList<T> {
+    fn from_iter<I: IntoIterator<Item=T>>(iter: I) -> Self {
+        let mut list = SimpleLinkedList::new();
 
-        for data in self.iter() {
-            result.push(data.clone());
+        for data in iter {
+            list.push(data)
         }
 
-        result
+        list
+    }
+}
+
+impl<T: Clone> SimpleLinkedList<T> {
+    pub fn rev(&self) -> SimpleLinkedList<T> {
+        self.iter().map(|elem| elem.clone()).collect()
     }
 }
 
 impl<'a, T: Clone> From<&'a [T]> for SimpleLinkedList<T> {
     fn from(slice: &[T]) -> Self {
-        let mut result = SimpleLinkedList::new();
-
-        for data in slice {
-            result.push(data.clone());
-        }
-
-        result
+        slice.iter().map(|elem| elem.clone()).collect()
     }
 }
 
