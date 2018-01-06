@@ -9,14 +9,6 @@ struct Node<T> {
     next: Option<Box<Node<T>>>
 }
 
-pub struct NodeIntoIter<T> {
-    list: SimpleLinkedList<T>
-}
-
-pub struct NodeIter<'a, T:'a> {
-    next: Option<&'a Node<T>>
-}
-
 impl<T> SimpleLinkedList<T> {
     pub fn new() -> Self {
         SimpleLinkedList { head: None }
@@ -44,44 +36,8 @@ impl<T> SimpleLinkedList<T> {
         self.head.as_ref().map(|node| &node.data)
     }
 
-    pub fn into_iter(self) -> NodeIntoIter<T> {
-        NodeIntoIter { list: self }
-    }
-
     pub fn iter(&self) -> NodeIter<T> {
         NodeIter { next: self.head.as_ref().map(|node| &**node) }
-    }
-}
-
-impl<'a, T> Iterator for NodeIter<'a, T> {
-    type Item = &'a T;
-
-    fn next(&mut self) -> Option<Self::Item> {
-        self.next.map(|node| {
-            self.next = node.next.as_ref().map(|node| &**node);
-            &node.data
-        })
-    }
-}
-
-impl<T> Iterator for NodeIntoIter<T> {
-    type Item = T;
-
-    fn next(&mut self) -> Option<Self::Item> {
-        self.list.pop()
-    }
-}
-
-// A generic way to create a SimpleLinkedList from an iterator.
-impl<T> FromIterator<T> for SimpleLinkedList<T> {
-    fn from_iter<I: IntoIterator<Item=T>>(iter: I) -> Self {
-        let mut list = SimpleLinkedList::new();
-
-        for data in iter {
-            list.push(data)
-        }
-
-        list
     }
 }
 
@@ -105,13 +61,67 @@ impl<T> Into<Vec<T>> for SimpleLinkedList<T> {
     }
 }
 
+// An iterator over borrowed values.
+pub struct NodeIter<'a, T:'a> {
+    next: Option<&'a Node<T>>
+}
+
+// An iterator over borrowed values.
+impl<'a, T> Iterator for NodeIter<'a, T> {
+    type Item = &'a T;
+
+    fn next(&mut self) -> Option<Self::Item> {
+        self.next.map(|node| {
+            self.next = node.next.as_ref().map(|node| &**node);
+            &node.data
+        })
+    }
+}
+
+// An iterator over owned values.
+pub struct NodeIntoIter<T> {
+    list: SimpleLinkedList<T>
+}
+
+// An iterator over owned values.
+impl<T> Iterator for NodeIntoIter<T> {
+    type Item = T;
+
+    fn next(&mut self) -> Option<Self::Item> {
+        self.list.pop()
+    }
+}
+
+// Allow the list to be used in a for loop.
+impl<T> IntoIterator for SimpleLinkedList<T> {
+    type Item = T;
+    type IntoIter = NodeIntoIter<T>;
+
+    fn into_iter(self) -> Self::IntoIter {
+        NodeIntoIter { list: self }
+    }
+}
+
+// An iterator over owned values.
+impl<T> FromIterator<T> for SimpleLinkedList<T> {
+    fn from_iter<I: IntoIterator<Item=T>>(iter: I) -> Self {
+        let mut list = SimpleLinkedList::new();
+
+        for data in iter {
+            list.push(data)
+        }
+
+        list
+    }
+}
+
 // Implement drop to prevent stack overflow during deallocation.
 // http://cglab.ca/~abeinges/blah/too-many-lists/book/first-drop.html
 impl<T> Drop for SimpleLinkedList<T> {
     fn drop(&mut self) {
         let mut cur_link = self.head.take();
-        while let Some(mut boxed_node) = cur_link {
-            cur_link = boxed_node.next.take();
+        while let Some(mut node) = cur_link {
+            cur_link = node.next.take();
         }
     }
 }
