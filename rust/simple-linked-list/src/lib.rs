@@ -7,7 +7,9 @@ struct Node<T> {
     next: Option<Box<Node<T>>>
 }
 
-pub struct NodeIter<'a, T:'a> {
+pub struct IntoIter<T>(SimpleLinkedList<T>);
+
+pub struct Iter<'a, T:'a> {
     next: Option<&'a Node<T>>,
 }
 
@@ -38,12 +40,16 @@ impl<T> SimpleLinkedList<T> {
         self.head.as_ref().map(|node| &node.data)
     }
 
-    pub fn iter(&self) -> NodeIter<T> {
-        NodeIter { next: self.head.as_ref().map(|node| &**node) }
+    pub fn into_iter(self) -> IntoIter<T> {
+        IntoIter(self)
+    }
+
+    pub fn iter(&self) -> Iter<T> {
+        Iter { next: self.head.as_ref().map(|node| &**node) }
     }
 }
 
-impl<'a, T> Iterator for NodeIter<'a, T> {
+impl<'a, T> Iterator for Iter<'a, T> {
     type Item = &'a T;
 
     fn next(&mut self) -> Option<Self::Item> {
@@ -51,6 +57,14 @@ impl<'a, T> Iterator for NodeIter<'a, T> {
             self.next = node.next.as_ref().map(|node| &**node);
             &node.data
         })
+    }
+}
+
+impl<T> Iterator for IntoIter<T> {
+    type Item = T;
+
+    fn next(&mut self) -> Option<Self::Item> {
+        self.0.pop()
     }
 }
 
@@ -79,13 +93,8 @@ impl<'a, T: Clone> From<&'a [T]> for SimpleLinkedList<T> {
 }
 
 impl<T> Into<Vec<T>> for SimpleLinkedList<T> {
-    fn into(mut self) -> Vec<T> {
-        let mut result = vec![];
-
-        while let Some(data) = self.pop() {
-            result.push(data);
-        }
-
+    fn into(self) -> Vec<T> {
+        let mut result = self.into_iter().collect::<Vec<T>>();
         result.reverse();
         result
     }
