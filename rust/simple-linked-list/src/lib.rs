@@ -7,10 +7,12 @@ struct Node<T> {
     next: Option<Box<Node<T>>>
 }
 
-pub struct IntoIter<T>(SimpleLinkedList<T>);
+pub struct IntoIter<T> {
+    list: SimpleLinkedList<T>
+}
 
 pub struct Iter<'a, T:'a> {
-    next: Option<&'a Node<T>>,
+    next: Option<&'a Node<T>>
 }
 
 impl<T> SimpleLinkedList<T> {
@@ -41,7 +43,7 @@ impl<T> SimpleLinkedList<T> {
     }
 
     pub fn into_iter(self) -> IntoIter<T> {
-        IntoIter(self)
+        IntoIter { list: self }
     }
 
     pub fn iter(&self) -> Iter<T> {
@@ -64,7 +66,7 @@ impl<T> Iterator for IntoIter<T> {
     type Item = T;
 
     fn next(&mut self) -> Option<Self::Item> {
-        self.0.pop()
+        self.list.pop()
     }
 }
 
@@ -97,5 +99,16 @@ impl<T> Into<Vec<T>> for SimpleLinkedList<T> {
         let mut result = self.into_iter().collect::<Vec<T>>();
         result.reverse();
         result
+    }
+}
+
+// Implement drop to prevent stack overflow during deallocation.
+// http://cglab.ca/~abeinges/blah/too-many-lists/book/first-drop.html
+impl<T> Drop for SimpleLinkedList<T> {
+    fn drop(&mut self) {
+        let mut cur_link = self.head.take();
+        while let Some(mut boxed_node) = cur_link {
+            cur_link = boxed_node.next.take();
+        }
     }
 }

@@ -82,3 +82,14 @@ fn test_into_vector() {
     let s_as_vec: Vec<i32> = s.into();
     assert_eq!(v, s_as_vec);
 }
+
+#[test]
+fn test_stack_overflow() {
+    let mut list = SimpleLinkedList::new();
+    for i in 0..10000000 {
+        list.push(i);
+    }
+
+    println!("about to call len()");
+    assert_eq!(10000000, list.len());
+}
