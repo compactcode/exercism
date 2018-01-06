@@ -9,11 +9,11 @@ struct Node<T> {
     next: Option<Box<Node<T>>>
 }
 
-pub struct IntoIter<T> {
+pub struct NodeIntoIter<T> {
     list: SimpleLinkedList<T>
 }
 
-pub struct Iter<'a, T:'a> {
+pub struct NodeIter<'a, T:'a> {
     next: Option<&'a Node<T>>
 }
 
@@ -44,16 +44,16 @@ impl<T> SimpleLinkedList<T> {
         self.head.as_ref().map(|node| &node.data)
     }
 
-    pub fn into_iter(self) -> IntoIter<T> {
-        IntoIter { list: self }
+    pub fn into_iter(self) -> NodeIntoIter<T> {
+        NodeIntoIter { list: self }
     }
 
-    pub fn iter(&self) -> Iter<T> {
-        Iter { next: self.head.as_ref().map(|node| &**node) }
+    pub fn iter(&self) -> NodeIter<T> {
+        NodeIter { next: self.head.as_ref().map(|node| &**node) }
     }
 }
 
-impl<'a, T> Iterator for Iter<'a, T> {
+impl<'a, T> Iterator for NodeIter<'a, T> {
     type Item = &'a T;
 
     fn next(&mut self) -> Option<Self::Item> {
@@ -64,7 +64,7 @@ impl<'a, T> Iterator for Iter<'a, T> {
     }
 }
 
-impl<T> Iterator for IntoIter<T> {
+impl<T> Iterator for NodeIntoIter<T> {
     type Item = T;
 
     fn next(&mut self) -> Option<Self::Item> {
