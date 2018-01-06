@@ -82,8 +82,8 @@ impl<T> Into<Vec<T>> for SimpleLinkedList<T> {
     fn into(mut self) -> Vec<T> {
         let mut result = vec![];
 
-        while let Some(node) = self.pop() {
-            result.push(node);
+        while let Some(data) = self.pop() {
+            result.push(data);
         }
 
         result.reverse();
