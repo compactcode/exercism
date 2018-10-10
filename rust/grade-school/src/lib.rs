@@ -1,7 +1,8 @@
 use std::collections::BTreeMap;
+use std::collections::BTreeSet;
 
 pub struct School {
-    students: BTreeMap<u32, Vec<String>>
+    students: BTreeMap<u32, BTreeSet<String>>
 }
 
 impl School {
@@ -12,11 +13,11 @@ impl School {
     }
 
     pub fn add(&mut self, grade: u32, student: &str) {
-        self.students.entry(grade).or_insert(Vec::new()).push(student.to_owned());
+        self.students.entry(grade).or_insert(BTreeSet::new()).insert(student.to_string());
     }
 
     pub fn grades(&self) -> Vec<u32> {
-        self.students.iter().map(|(grade, _)| grade.to_owned()).collect()
+        self.students.keys().cloned().collect()
     }
 
     // If grade returned an `Option<&Vec<String>>`,
@@ -24,10 +25,6 @@ impl School {
     // By returning an owned vector instead,
     // the internal implementation is free to use whatever it chooses.
     pub fn grade(&self, grade: u32) -> Option<Vec<String>> {
-        self.students.get(&grade).map(|students| {
-            let mut sorted = students.to_owned();
-            sorted.sort();
-            sorted
-        })
+        self.students.get(&grade).map(|students| students.iter().map(|x| x.to_string()).collect())
     }
 }
