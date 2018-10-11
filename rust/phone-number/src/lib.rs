@@ -1,5 +1,5 @@
 pub fn number(input: &str) -> Option<String> {
-    let mut numbers: String = input.chars().filter(|x| x.is_numeric()).collect();
+    let mut numbers: Vec<char> = input.chars().filter(|x| x.is_numeric()).collect();
 
     match numbers.len() {
       10 => validate_numbers(numbers),
@@ -13,14 +13,10 @@ pub fn number(input: &str) -> Option<String> {
     }
 }
 
-fn validate_numbers(numbers: String) -> Option<String> {
-    match numbers.get(0..1) {
-        Some("0") | Some("1") => return None,
-        _                     => ()
-    }
-
-    match numbers.get(3..4) {
-        Some("0") | Some("1") => None,
-        _                     => Some(numbers)
+fn validate_numbers(numbers: Vec<char>) -> Option<String> {
+    if numbers[0] > '1' && numbers[3] > '1' {
+        Some(numbers.iter().collect())
+    } else {
+        None
     }
 }
