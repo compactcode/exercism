@@ -1,4 +1,5 @@
 use std::collections::BTreeMap;
+use std::fmt::Display;
 
 pub struct ScoreCard {
     wins:   usize,
@@ -59,24 +60,30 @@ pub fn tally(match_results: &str) -> String {
         }
     }
 
-    let mut result = String::from("Team                           | MP |  W |  D |  L |  P");
-
     let mut ranked_teams: Vec<(&str, ScoreCard)> = teams.into_iter().collect();
-    ranked_teams.sort_by(|(a, card_a), (b, card_b)| card_a.points().cmp(&card_b.points()).reverse().then_with(|| a.cmp(b)));
+    ranked_teams.sort_by(|(name_a, card_a), (name_b, card_b)| {
+        card_a.points().cmp(&card_b.points()).reverse().then_with(|| name_a.cmp(name_b))
+    });
+
+    let mut result = Vec::new();
+    result.push(format_row(&"Team", &"MP", &"W", &"D", &"L", &"P"));
 
     for (name, score_card) in ranked_teams {
-        result.push_str(
-            &format!(
-                "\n{:30} | {:2} | {:2} | {:2} | {:2} | {:2}",
-                name,
-                score_card.matches(),
-                score_card.wins,
-                score_card.draws,
-                score_card.losses,
-                score_card.points()
+        result.push(
+            format_row(
+                &name,
+                &score_card.matches(),
+                &score_card.wins,
+                &score_card.draws,
+                &score_card.losses,
+                &score_card.points()
             )
         );
     }
 
-    return result;
+    return result.join("\n");
+}
+
+pub fn format_row(a: &Display, b: &Display, c: &Display, d: &Display, e: &Display, f: &Display) -> String {
+    format!("{:30} | {:>2} | {:>2} | {:>2} | {:>2} | {:>2}", a, b, c, d, e, f)
 }
