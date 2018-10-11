@@ -1,6 +1,12 @@
 use std::collections::BTreeMap;
 use std::fmt::Display;
 
+pub enum Outcome {
+    Win,
+    Loss,
+    Draw
+}
+
 pub struct ScoreCard {
     wins:   usize,
     draws:  usize,
@@ -16,16 +22,12 @@ impl ScoreCard {
         }
     }
 
-    pub fn add_win(&mut self) {
-        self.wins += 1;
-    }
-
-    pub fn add_loss(&mut self) {
-        self.losses += 1;
-    }
-
-    pub fn add_draw(&mut self) {
-        self.draws += 1;
+    pub fn add_outcome(&mut self, outcome: Outcome) {
+        match outcome {
+            Outcome::Win  => self.wins   += 1,
+            Outcome::Loss => self.losses += 1,
+            Outcome::Draw => self.draws  += 1,
+        }
     }
 
     pub fn matches(&self) -> usize {
@@ -43,21 +45,14 @@ pub fn tally(match_results: &str) -> String {
     for match_line in match_results.lines() {
         let match_data: Vec<&str> = match_line.split(';').collect();
 
-        match match_data[2] {
-            "win" => {
-                teams.entry(match_data[0]).or_insert(ScoreCard::new()).add_win();
-                teams.entry(match_data[1]).or_insert(ScoreCard::new()).add_loss();
-            },
-            "loss" => {
-                teams.entry(match_data[0]).or_insert(ScoreCard::new()).add_loss();
-                teams.entry(match_data[1]).or_insert(ScoreCard::new()).add_win();
-            },
-            "draw" => {
-                teams.entry(match_data[0]).or_insert(ScoreCard::new()).add_draw();
-                teams.entry(match_data[1]).or_insert(ScoreCard::new()).add_draw();
-            },
-            _ => ()
-        }
+        let outcome = match match_data[2] {
+            "win"  => (Outcome::Win,  Outcome::Loss),
+            "loss" => (Outcome::Loss, Outcome::Win),
+            _      => (Outcome::Draw, Outcome::Draw),
+        };
+
+        teams.entry(match_data[0]).or_insert(ScoreCard::new()).add_outcome(outcome.0);
+        teams.entry(match_data[1]).or_insert(ScoreCard::new()).add_outcome(outcome.1);
     }
 
     let mut ranked_teams: Vec<(&str, ScoreCard)> = teams.into_iter().collect();
