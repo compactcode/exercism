@@ -17,7 +17,7 @@ impl Clock {
     }
 
     pub fn hours(&self) -> i32 {
-        (self.total_minutes / 60) % 24
+        self.total_minutes / 60
     }
 
     pub fn minutes(&self) -> i32 {
