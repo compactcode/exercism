@@ -4,7 +4,7 @@ pub fn abbreviate(phrase: &str) -> String {
         .fold(Vec::new(), |mut result, word| {
             let (first, rest) = word.split_at(1);
             result.push(first.to_string());
-            if !rest.chars().filter(|x| x.is_alphabetic()).all(char::is_uppercase) {
+            if rest.chars().filter(|x| x.is_alphabetic()).any(char::is_lowercase) {
                 result.push(rest.chars().filter(|x| x.is_uppercase()).collect::<String>());
             }
             result
